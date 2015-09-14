@@ -21,7 +21,12 @@ var moving = [];
 for (var i = 0; i < numBlocks; i++) {
   var somethingMove = [];
   for (var l = 0; l < secondNumBlocks; l++) {
-    somethingMove.push({isMoving: false, isMoveUp: false, current: 0});
+    somethingMove.push({
+      one: {isMoving: false, isMovingUp: false, current: 0},
+      two: {isMoving: false, isMovingUp: false, current: 0},
+      three: {isMoving: false, isMovingUp: false, current: 0},
+      four: {isMoving: false, isMovingUp: false, current: 0},
+    })
   }
   moving.push(somethingMove);
 }
@@ -103,12 +108,27 @@ function setMove() {
 
   var randomOne = Math.floor(Math.random() * numBlocks);
   var randomTwo = Math.floor(Math.random() * secondNumBlocks);
+  var randomIndex = Math.floor(Math.random() * 4);
 
   var moveBlock = moving[randomOne][randomTwo];
+  var index;
 
-  if (!moveBlock.isMoving) {
-    moveBlock.isMoving = true;
-    moveBlock.isMovingUp = true;
+  if (randomIndex === 0) {
+    index = moveBlock.one;
+  }
+  if (randomIndex === 1) {
+    index = moveBlock.two;
+  }
+  if (randomIndex === 2) {
+    index = moveBlock.three;
+  }
+  if (randomIndex === 3) {
+    index = moveBlock.four;
+  }
+
+  if (!index.isMoving) {
+    index.isMoving = true;
+    index.isMovingUp = true;
   }
 
 }
@@ -117,39 +137,47 @@ function move() {
 
   for (var i = 0; i < moving.length; i++) {
     for (var l = 0; l < moving[i].length; l++) {
+      ['one', 'two', 'three', 'four'].forEach(function (e) {
 
-      var block = moving[i][l];
+        var block = moving[i][l][e];
 
-      if (block.isMoving) {
+        if (block.isMoving) {
 
-        var temp = (l * (4 * 3)) + (i * (secondNumBlocks * (4 * 3)))
-
-        var indiceOne = temp + 2;
-        var indiceTwo = temp + 5;
-        var indiceThree = temp + 8;
-        var indiceFour = temp + 11;
-
-        if (block.isMovingUp) {
-          block.current = block.current + 0.1;
-          if (block.current > 2) {
-            block.isMovingUp = false;
+          if (block.isMovingUp) {
+            block.current = block.current + 0.1;
+            if (block.current > 1) {
+              block.isMovingUp = false;
+            }
           }
-        }
-        else {
-          block.current = block.current - 0.1;
-          if (block.current < 0) {
-            block.current = 0;
-            block.isMoving = false;
+          else {
+            block.current = block.current - 0.1;
+            if (block.current < 0) {
+              block.current = 0;
+              block.isMoving = false;
+            }
           }
+
+          var temp = (l * (4 * 3)) + (i * (secondNumBlocks * (4 * 3)))
+          var indice = 0;
+
+          if (e === 'one') {
+            indice = temp + 2;
+          }
+          if (e === 'two') {
+            indice = temp + 5;
+          }
+          if (e === 'three') {
+            indice = temp + 8;
+          }
+          if (e === 'four') {
+            indice = temp + 11;
+          }
+
+          vertices[indice] = block.current;
+
         }
 
-        vertices[indiceOne] = block.current;
-        vertices[indiceTwo] = block.current;
-        vertices[indiceThree] = block.current;
-        vertices[indiceFour] = block.current;
-
-      }
-
+      });
     }
   }
 
