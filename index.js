@@ -111,24 +111,88 @@ function setMove() {
   var randomIndex = Math.floor(Math.random() * 4);
 
   var moveBlock = moving[randomOne][randomTwo];
-  var index;
+
+  var index = 0;
+  var indexTwo = 0;
+  var indexThree = 0;
+  var indexFour = 0;
 
   if (randomIndex === 0) {
     index = moveBlock.one;
+    if (randomTwo - 1 > -1) {
+      indexTwo = moving[randomOne][randomTwo - 1].two;
+    }
+    if ((randomTwo - 1 > -1) && (randomOne + 1 < numBlocks)) {
+      indexThree = moving[randomOne + 1][randomTwo - 1].three;
+    }
+    if (randomOne + 1 < numBlocks) {
+      indexFour = moving[randomOne + 1][randomTwo].four;
+    }
   }
+
   if (randomIndex === 1) {
     index = moveBlock.two;
+    if (randomTwo + 1 < secondNumBlocks) {
+      indexTwo = moving[randomOne][randomTwo + 1].one;
+    }
+    if (randomTwo + 1 < secondNumBlocks && (randomOne + 1 < numBlocks)) {
+      indexThree = moving[randomOne + 1][randomTwo + 1].four;
+    }
+    if (randomOne + 1 < numBlocks) {
+      indexFour = moving[randomOne + 1][randomTwo].three;
+    }
   }
+
   if (randomIndex === 2) {
     index = moveBlock.three;
+    if (randomTwo + 1 < secondNumBlocks) {
+      indexTwo = moving[randomOne][randomTwo + 1].four;
+    }
+    if ((randomTwo + 1 < secondNumBlocks) && (randomOne - 1 > -1)) {
+      indexThree = moving[randomOne - 1][randomTwo + 1].one;
+    }
+    if (randomOne - 1 > -1) {
+      indexFour = moving[randomOne - 1][randomTwo].two;
+    }
   }
+
   if (randomIndex === 3) {
     index = moveBlock.four;
+    if (randomTwo - 1 > -1) {
+      indexTwo = moving[randomOne][randomTwo - 1].three;
+    }
+    if ((randomTwo - 1 > -1) && (randomOne - 1 > -1)) {
+      indexThree = moving[randomOne - 1][randomTwo - 1].two;
+    }
+    if (randomOne - 1 > -1) {
+      indexFour = moving[randomOne - 1][randomTwo].one;
+    }
   }
 
   if (!index.isMoving) {
     index.isMoving = true;
     index.isMovingUp = true;
+  }
+
+  if (indexTwo) {
+    if (!indexTwo.isMoving) {
+      indexTwo.isMoving = true;
+      indexTwo.isMovingUp = true;
+    }
+  }
+
+  if (indexThree) {
+    if (!indexThree.isMoving) {
+      indexThree.isMoving = true;
+      indexThree.isMovingUp = true;
+    }
+  }
+
+  if (indexFour) {
+    if (!indexFour.isMoving) {
+      indexFour.isMoving = true;
+      indexFour.isMovingUp = true;
+    }
   }
 
 }
