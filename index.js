@@ -15,21 +15,31 @@ var colors = [];
 var indices = [];
 
 var numBlocks = 5;
-var secondNumBlocks = 25;
+var secondNumBlocks = 30;
 
 var moving = [];
-for (var i = 0; i < numBlocks; i++) {
-  var somethingMove = [];
-  for (var l = 0; l < secondNumBlocks; l++) {
-    somethingMove.push({
-      one: {isMoving: false, isMovingUp: false, current: 0},
-      two: {isMoving: false, isMovingUp: false, current: 0},
-      three: {isMoving: false, isMovingUp: false, current: 0},
-      four: {isMoving: false, isMovingUp: false, current: 0},
-    })
+function generateMoving() {
+  var isLeft = true;
+  for (var i = 0; i < numBlocks; i++) {
+    var somethingMove = [];
+    for (var l = 0; l < secondNumBlocks; l++) {
+      somethingMove.push({
+        isLeft: isLeft,
+        one: {isMoving: false, isMovingUp: false, current: 0},
+        two: {isMoving: false, isMovingUp: false, current: 0},
+        three: {isMoving: false, isMovingUp: false, current: 0}
+      })
+      if (!isLeft) {
+        isLeft = true;
+      }
+      else {
+        isLeft = false;
+      }
+    }
+    moving.push(somethingMove);
   }
-  moving.push(somethingMove);
 }
+generateMoving();
 
 function degToRad(deg) {
   return deg * (Math.PI / 180);
@@ -45,18 +55,29 @@ function generateVertices() {
   var currentY = 1;
   var currentIndex = 0;
 
+  var changeSomething = false;
   var changeColor = false;
 
   for (var i = 0; i < numBlocks; i++) {
 
     for (var l = 0; l < secondNumBlocks; l++) {
 
-      var tempVertices = [
-        currentX, currentY, 0.0,
-        currentX + 2, currentY, 0.0,
-        currentX + 2, currentY - 2, 0.0,
-        currentX, currentY - 2, 0.0
-      ];
+      var tempVertices = [];
+
+      if (!changeSomething) {
+        tempVertices = [
+          currentX, currentY, 0.0,
+          currentX + 2, currentY - 2, 0.0,
+          currentX, currentY - 2, 0.0
+        ]
+      }
+      else {
+        tempVertices = [
+          currentX, currentY, 0.0,
+          currentX + 2, currentY, 0.0,
+          currentX + 2, currentY - 2, 0.0
+        ]
+      }
 
       var tempColors = [];
       var somethingColor = [];
@@ -70,21 +91,27 @@ function generateVertices() {
         changeColor = false;
       }
 
-      while (tempColors.length < 4 * 4) {
+      while (tempColors.length < 3 * 4) {
         tempColors = tempColors.concat(somethingColor);
       }
 
       var tempIndices = [
-        currentIndex, currentIndex + 1, currentIndex + 2,
-        currentIndex + 2, currentIndex + 3, currentIndex
+        currentIndex, currentIndex + 1, currentIndex + 2
       ];
 
       vertices = vertices.concat(tempVertices);
       colors = colors.concat(tempColors);
       indices = indices.concat(tempIndices);
 
-      currentX += 2;
-      currentIndex += 4;
+      if (!changeSomething) {
+        changeSomething = true;
+      }
+      else {
+        currentX += 2;
+        changeSomething = false;
+      }
+
+      currentIndex += 3;
 
     }
 
@@ -108,90 +135,171 @@ function setMove() {
 
   var randomOne = Math.floor(Math.random() * numBlocks);
   var randomTwo = Math.floor(Math.random() * secondNumBlocks);
-  var randomIndex = Math.floor(Math.random() * 4);
+  var randomIndex = Math.floor(Math.random() * 3);
 
   var moveBlock = moving[randomOne][randomTwo];
+  var somethingIsLeft = moveBlock.isLeft;
 
-  var index = 0;
-  var indexTwo = 0;
-  var indexThree = 0;
-  var indexFour = 0;
+  var blockOneIndex = 0;
+  var blockOneIndexTwo = 0;
 
-  if (randomIndex === 0) {
-    index = moveBlock.one;
-    if (randomTwo - 1 > -1) {
-      indexTwo = moving[randomOne][randomTwo - 1].two;
+  var blockTwoIndex = 0;
+  var blockTwoIndexTwo = 0;
+
+  var blockThreeIndex = 0;
+  var blockThreeIndexTwo = 0;
+
+  var blockFourIndex = 0;
+  var blockFourIndexTwo = 0;
+
+  if (somethingIsLeft) {
+
+    if (randomIndex === 0) {
+      blockOneIndex = moveBlock.one;
+      if (randomTwo + 1 < secondNumBlocks) {
+        blockOneIndexTwo = moving[randomOne][randomTwo + 1].one;
+      }
+      if (randomTwo - 1 > -1) {
+        blockTwoIndexTwo = moving[randomOne][randomTwo - 1].two;
+      }
+      if ((randomTwo - 1 > -1) && (randomOne + 1 < numBlocks)) {
+        blockThreeIndex = moving[randomOne + 1][randomTwo - 2].two;
+        blockThreeIndexTwo = moving[randomOne + 1][randomTwo - 1].three;
+      }
+      if (randomOne + 1 < numBlocks) {
+        blockFourIndex = moving[randomOne + 1][randomTwo].three;
+      }
     }
-    if ((randomTwo - 1 > -1) && (randomOne + 1 < numBlocks)) {
-      indexThree = moving[randomOne + 1][randomTwo - 1].three;
+
+    if (randomIndex === 1) {
+      blockOneIndex = moveBlock.two;
+      if (randomTwo + 1 < secondNumBlocks) {
+        blockOneIndexTwo = moving[randomOne][randomTwo + 1].three;
+      }
+      if (randomTwo + 2 < secondNumBlocks) {
+        blockTwoIndex = moving[randomOne][randomTwo + 2].three;
+      }
+      if ((randomTwo + 2 < secondNumBlocks) && (randomOne - 1 > -1)) {
+        blockThreeIndex = moving[randomOne - 1][randomTwo + 2].one;
+        blockThreeIndexTwo = moving[randomOne - 1][randomTwo + 3].one;
+      }
+      if (randomOne - 1 > -1) {
+        blockFourIndex = moving[randomOne - 1][randomTwo + 1].two;
+      }
     }
-    if (randomOne + 1 < numBlocks) {
-      indexFour = moving[randomOne + 1][randomTwo].four;
+
+    if (randomIndex === 2) {
+      blockOneIndex = moveBlock.three;
+      if (randomTwo - 1 > -1) {
+        blockTwoIndex = moving[randomOne][randomTwo - 1].three;
+        blockTwoIndexTwo = moving[randomOne][randomTwo - 2].two;
+      }
+      if ((randomTwo - 1 > -1) && (randomOne - 1 > -1)) {
+        blockThreeIndex = moving[randomOne - 1][randomTwo - 1].two;
+      }
+      if (randomOne - 1 > -1) {
+        blockFourIndex = moving[randomOne - 1][randomTwo].one;
+        blockFourIndexTwo = moving[randomOne - 1][randomTwo + 1].one;
+      }
+    }
+
+  }
+  else {
+
+    if (randomIndex === 0) {
+      blockOneIndex = moveBlock.one;
+      blockOneIndexTwo = moving[randomOne][randomTwo - 1].one;
+      if (randomTwo - 2 > -1) {
+        blockTwoIndex = moving[randomOne][randomTwo - 2].two;
+      }
+      if ((randomTwo - 2 > -1) && (randomOne + 1 < numBlocks)) {
+        blockThreeIndex = moving[randomOne + 1][randomTwo - 2].three;
+        blockThreeIndexTwo = moving[randomOne + 1][randomTwo - 3].two;
+      }
+      if (randomOne + 1 < numBlocks) {
+        blockFourIndex = moving[randomOne + 1][randomTwo - 1].three;
+      }
+    }
+
+    if (randomIndex === 1) {
+      blockOneIndex = moveBlock.two;
+      if (randomTwo + 1 < secondNumBlocks) {
+        blockTwoIndex = moving[randomOne][randomTwo + 1].one;
+        blockTwoIndexTwo = moving[randomOne][randomTwo + 2].one;
+      }
+      if ((randomTwo + 1 < secondNumBlocks) && (randomOne + 1 < numBlocks)) {
+        blockThreeIndex = moving[randomOne + 1][randomTwo + 1].three;
+      }
+      if (randomOne + 1 < numBlocks) {
+        blockFourIndex = moving[randomOne + 1][randomTwo].three;
+        blockFourIndexTwo = moving[randomOne + 1][randomTwo - 1].two;
+      }
+    }
+
+    if (randomIndex === 2) {
+      blockOneIndex = moveBlock.three;
+      blockOneIndexTwo = moving[randomOne][randomTwo - 1].two;
+      if (randomTwo + 1 < secondNumBlocks) {
+        blockTwoIndex = moving[randomOne][randomTwo + 1].three;
+      }
+      if ((randomTwo + 1 < secondNumBlocks) && (randomOne - 1 > -1)) {
+        blockThreeIndex = moving[randomOne - 1][randomTwo + 1].one;
+        blockThreeIndexTwo = moving[randomOne - 1][randomTwo + 2].one;
+      }
+      if (randomOne - 1 > -1) {
+        blockFourIndex = moving[randomOne - 1][randomTwo].two;
+      }
+    }
+
+  }
+
+  if (!blockOneIndex.isMoving) {
+    blockOneIndex.isMoving = true;
+    blockOneIndex.isMovingUp = true;
+  }
+  if (blockOneIndexTwo) {
+    if (!blockOneIndexTwo.isMoving) {
+      blockOneIndexTwo.isMoving = true;
+      blockOneIndexTwo.isMovingUp = true;
     }
   }
 
-  if (randomIndex === 1) {
-    index = moveBlock.two;
-    if (randomTwo + 1 < secondNumBlocks) {
-      indexTwo = moving[randomOne][randomTwo + 1].one;
+  if (blockTwoIndex) {
+    if (!blockTwoIndex.isMoving) {
+      blockTwoIndex.isMoving = true;
+      blockTwoIndex.isMovingUp = true;
     }
-    if (randomTwo + 1 < secondNumBlocks && (randomOne + 1 < numBlocks)) {
-      indexThree = moving[randomOne + 1][randomTwo + 1].four;
-    }
-    if (randomOne + 1 < numBlocks) {
-      indexFour = moving[randomOne + 1][randomTwo].three;
+  }
+  if (blockTwoIndexTwo) {
+    if (!blockTwoIndexTwo.isMoving) {
+      blockTwoIndexTwo.isMoving = true;
+      blockTwoIndexTwo.isMovingUp = true;
     }
   }
 
-  if (randomIndex === 2) {
-    index = moveBlock.three;
-    if (randomTwo + 1 < secondNumBlocks) {
-      indexTwo = moving[randomOne][randomTwo + 1].four;
+  if (blockThreeIndex) {
+    if (!blockThreeIndex.isMoving) {
+      blockThreeIndex.isMoving = true;
+      blockThreeIndex.isMovingUp = true;
     }
-    if ((randomTwo + 1 < secondNumBlocks) && (randomOne - 1 > -1)) {
-      indexThree = moving[randomOne - 1][randomTwo + 1].one;
-    }
-    if (randomOne - 1 > -1) {
-      indexFour = moving[randomOne - 1][randomTwo].two;
+  }
+  if (blockThreeIndexTwo) {
+    if (!blockThreeIndexTwo.isMoving) {
+      blockThreeIndexTwo.isMoving = true;
+      blockThreeIndexTwo.isMovingUp = true;
     }
   }
 
-  if (randomIndex === 3) {
-    index = moveBlock.four;
-    if (randomTwo - 1 > -1) {
-      indexTwo = moving[randomOne][randomTwo - 1].three;
-    }
-    if ((randomTwo - 1 > -1) && (randomOne - 1 > -1)) {
-      indexThree = moving[randomOne - 1][randomTwo - 1].two;
-    }
-    if (randomOne - 1 > -1) {
-      indexFour = moving[randomOne - 1][randomTwo].one;
+  if (blockFourIndex) {
+    if (!blockFourIndex.isMoving) {
+      blockFourIndex.isMoving = true;
+      blockFourIndex.isMovingUp = true;
     }
   }
-
-  if (!index.isMoving) {
-    index.isMoving = true;
-    index.isMovingUp = true;
-  }
-
-  if (indexTwo) {
-    if (!indexTwo.isMoving) {
-      indexTwo.isMoving = true;
-      indexTwo.isMovingUp = true;
-    }
-  }
-
-  if (indexThree) {
-    if (!indexThree.isMoving) {
-      indexThree.isMoving = true;
-      indexThree.isMovingUp = true;
-    }
-  }
-
-  if (indexFour) {
-    if (!indexFour.isMoving) {
-      indexFour.isMoving = true;
-      indexFour.isMovingUp = true;
+  if (blockFourIndexTwo) {
+    if (!blockFourIndexTwo.isMoving) {
+      blockFourIndexTwo.isMoving = true;
+      blockFourIndexTwo.isMovingUp = true;
     }
   }
 
@@ -201,7 +309,7 @@ function move() {
 
   for (var i = 0; i < moving.length; i++) {
     for (var l = 0; l < moving[i].length; l++) {
-      ['one', 'two', 'three', 'four'].forEach(function (e) {
+      ['one', 'two', 'three'].forEach(function (e) {
 
         var block = moving[i][l][e];
 
@@ -221,7 +329,7 @@ function move() {
             }
           }
 
-          var temp = (l * (4 * 3)) + (i * (secondNumBlocks * (4 * 3)))
+          var temp = (l * (3 * 3)) + (i * (secondNumBlocks * (3 * 3)))
           var indice = 0;
 
           if (e === 'one') {
@@ -232,9 +340,6 @@ function move() {
           }
           if (e === 'three') {
             indice = temp + 8;
-          }
-          if (e === 'four') {
-            indice = temp + 11;
           }
 
           vertices[indice] = block.current;
@@ -341,7 +446,7 @@ function initBuffers() {
   gl.bindBuffer(gl.ARRAY_BUFFER, somethingVertexPositionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   somethingVertexPositionBuffer.itemSize = 3;
-  somethingVertexPositionBuffer.numItems = 4 * (numBlocks * secondNumBlocks);
+  somethingVertexPositionBuffer.numItems = 3 * (numBlocks * secondNumBlocks);
 
   somethingVertexColorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, somethingVertexColorBuffer);
@@ -353,7 +458,7 @@ function initBuffers() {
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, somethingVertexIndexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
   somethingVertexIndexBuffer.itemSize = 1;
-  somethingVertexIndexBuffer.numItems = 6 * (numBlocks * secondNumBlocks);
+  somethingVertexIndexBuffer.numItems = 3 * (numBlocks * secondNumBlocks);
 
 }
 
