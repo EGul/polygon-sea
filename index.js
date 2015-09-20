@@ -15,6 +15,11 @@ function PolygonSea(opts) {
   if (!opts.hasOwnProperty('directionalLightVector')) opts.directionalLightVector = [1, -1, 0];
   if (!opts.hasOwnProperty('moveIncrement')) opts.moveIncrement = 0.01;
   if (!opts.hasOwnProperty('maxMove')) opts.maxMove = 1.0;
+  if (!opts.hasOwnProperty('gradientTop')) opts.gradientTop = false;
+  if (!opts.hasOwnProperty('gradientBottom')) opts.gradientBottom = false;
+  if (!opts.hasOwnProperty('gradientLeft')) opts.gradientLeft = false;
+  if (!opts.hasOwnProperty('gradientRight')) opts.gradientRight = false;
+  if (!opts.hasOwnProperty('gradientBlocks')) opts.gradientBlocks = 0;
 
   var gl;
 
@@ -79,6 +84,19 @@ function PolygonSea(opts) {
 
     var changeSide = false;
 
+    var gradientColors = [];
+    var tempArray = [];
+    for (var i = 0; i < opts.gradientBlocks; i++) {
+      tempArray.push(opts.color[0]);
+      tempArray.push(opts.color[1]);
+      tempArray.push(opts.color[2]);
+      tempArray.push((opts.color[3] / (opts.gradientBlocks + 1)) * (i + 1));
+      gradientColors.push(tempArray);
+      tempArray = [];
+    }
+
+    var setColor = [];
+
     for (var i = 0; i < opts.xBlocks; i++) {
 
       for (var l = 0; l < opts.yBlocks; l++) {
@@ -98,8 +116,73 @@ function PolygonSea(opts) {
           ]);
         }
 
-        for (var j = 0; j < 3 * 4; j++) {
-          colors = colors.concat(opts.color);
+        if (opts.gradientBlocks > 0) {
+
+          if (opts.gradientTop) {
+            if (opts.gradientTop) {
+              if (i > opts.xBlocks - opts.gradientBlocks) {
+                setColor = gradientColors[opts.xBlocks - i];
+              }
+            }
+          }
+
+          if (opts.gradientBottom) {
+            if (i < opts.gradientBlocks) {
+              setColor = gradientColors[i];
+            }
+          }
+
+          if (opts.gradientLeft) {
+
+            if (l < opts.gradientBlocks * 2) {
+
+              var tempL = Math.floor(l / 2);
+
+              if (i < opts.gradientBlocks) {
+                if (tempL < i) setColor = gradientColors[tempL];
+              }
+
+              if (i > opts.xBlocks - opts.gradientBlocks) {
+                if (tempL < opts.xBlocks - i) setColor = gradientColors[tempL];
+              }
+
+              if (!setColor.length) {
+                setColor = gradientColors[tempL];
+              }
+
+            }
+
+          }
+
+          if (opts.gradientRight) {
+
+            if (l >= opts.yBlocks - (opts.gradientBlocks * 2)) {
+
+              var tempL = Math.floor(l / 2);
+
+              var index = Math.floor((l - (opts.yBlocks - (opts.gradientBlocks * 2))) / 2);
+              index = opts.gradientBlocks - index;
+              index -= 1;
+
+              if (i < opts.gradientBlocks) {
+                if ((opts.yBlocks / 2) - tempL - 1 < i) setColor = gradientColors[index];
+              }
+              if (i > opts.xBlocks - opts.gradientBlocks) {
+                if ((opts.yBlocks / 2) - tempL - 1 < opts.xBlocks - i) setColor = gradientColors[index];
+              }
+
+              if (!setColor.length) setColor = gradientColors[index];
+
+            }
+
+          }
+
+        }
+
+        if (!setColor.length) setColor = opts.color;
+
+        for (var j = 0; j < 3; j++) {
+          colors = colors.concat(setColor)
         }
 
         for (var j = 0; j < 3; j++) {
@@ -117,6 +200,8 @@ function PolygonSea(opts) {
         }
 
         currentIndex += 3;
+
+        setColor = [];
 
       }
 
