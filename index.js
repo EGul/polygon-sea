@@ -20,6 +20,7 @@ function PolygonSea(opts) {
   if (!opts.hasOwnProperty('gradientLeft')) opts.gradientLeft = false;
   if (!opts.hasOwnProperty('gradientRight')) opts.gradientRight = false;
   if (!opts.hasOwnProperty('gradientBlocks')) opts.gradientBlocks = 0;
+  if (!opts.hasOwnProperty('preset')) opts.preset = false;
 
   var gl;
 
@@ -73,6 +74,18 @@ function PolygonSea(opts) {
         isNotMoving.push(points[l].three);
       }
     }
+  }
+
+  function preset() {
+
+    var count = isNotMoving.length;
+
+    while (count > 0) {
+      setMove();
+      move();
+      count--;
+    }
+
   }
 
   function degToRad(deg) {
@@ -408,8 +421,10 @@ function PolygonSea(opts) {
 
     }
 
-    initBuffers();
-    drawScene();
+    if (typeof gl !== 'undefined') {
+      initBuffers();
+      drawScene();
+    }
 
   }
 
@@ -573,6 +588,10 @@ function PolygonSea(opts) {
     var width = canvas.width;
 
     generateVertices();
+
+    if (opts.preset) {
+      preset();
+    }
 
     initGL(canvas);
     initShaders();
