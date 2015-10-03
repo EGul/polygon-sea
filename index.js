@@ -22,6 +22,8 @@ function PolygonSea(opts) {
   if (!opts.hasOwnProperty('gradientBlocks')) opts.gradientBlocks = 0;
   if (!opts.hasOwnProperty('preset')) opts.preset = false;
 
+  opts.xBlocks *= 2;
+
   var gl;
 
   var somethingVertexPositionBuffer;
