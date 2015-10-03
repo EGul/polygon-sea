@@ -1,8 +1,8 @@
 
 function PolygonSea(opts) {
 
-  if (!opts.hasOwnProperty('xBlocks')) opts.xBlocks = 10;
-  if (!opts.hasOwnProperty('yBlocks')) opts.yBlocks = 50;
+  if (!opts.hasOwnProperty('xBlocks')) opts.xBlocks = 50;
+  if (!opts.hasOwnProperty('yBlocks')) opts.yBlocks = 10;
   if (!opts.hasOwnProperty('translateX')) opts.translateX = 0;
   if (!opts.hasOwnProperty('translateY')) opts.translateY = 0;
   if (!opts.hasOwnProperty('translateZ')) opts.translateZ = -45;
@@ -51,9 +51,9 @@ function PolygonSea(opts) {
   generateMoving();
   function generateMoving() {
     var isLeft = true;
-    for (var i = 0; i < opts.xBlocks; i++) {
+    for (var i = 0; i < opts.yBlocks; i++) {
       var points = [];
-      for (var l = 0; l < opts.yBlocks; l++) {
+      for (var l = 0; l < opts.xBlocks; l++) {
         points.push({
           isLeft: isLeft,
           one: {index: 0, xIndex: l, yIndex: i, isLeft: isLeft, isMoving: false, isMovingUp: false, current: 0},
@@ -98,8 +98,8 @@ function PolygonSea(opts) {
 
   function generateVertices() {
 
-    var currentX = -(opts.yBlocks / 2);
-    var currentY = -(opts.xBlocks - 2);
+    var currentX = -(opts.xBlocks / 2);
+    var currentY = -(opts.yBlocks - 2);
     var currentIndex = 0;
 
     var changeSide = false;
@@ -117,9 +117,9 @@ function PolygonSea(opts) {
 
     var setColor = [];
 
-    for (var i = 0; i < opts.xBlocks; i++) {
+    for (var i = 0; i < opts.yBlocks; i++) {
 
-      for (var l = 0; l < opts.yBlocks; l++) {
+      for (var l = 0; l < opts.xBlocks; l++) {
 
         if (!changeSide) {
           vertices = vertices.concat([
@@ -140,8 +140,8 @@ function PolygonSea(opts) {
 
           if (opts.gradientTop) {
             if (opts.gradientTop) {
-              if (i > opts.xBlocks - opts.gradientBlocks) {
-                setColor = gradientColors[opts.xBlocks - i];
+              if (i > opts.yBlocks - opts.gradientBlocks) {
+                setColor = gradientColors[opts.yBlocks - i];
               }
             }
           }
@@ -162,8 +162,8 @@ function PolygonSea(opts) {
                 if (tempL < i) setColor = gradientColors[tempL];
               }
 
-              if (i > opts.xBlocks - opts.gradientBlocks) {
-                if (tempL < opts.xBlocks - i) setColor = gradientColors[tempL];
+              if (i > opts.yBlocks - opts.gradientBlocks) {
+                if (tempL < opts.yBlocks - i) setColor = gradientColors[tempL];
               }
 
               if (!setColor.length) {
@@ -176,19 +176,19 @@ function PolygonSea(opts) {
 
           if (opts.gradientRight) {
 
-            if (l >= opts.yBlocks - (opts.gradientBlocks * 2)) {
+            if (l >= opts.xBlocks - (opts.gradientBlocks * 2)) {
 
               var tempL = Math.floor(l / 2);
 
-              var index = Math.floor((l - (opts.yBlocks - (opts.gradientBlocks * 2))) / 2);
+              var index = Math.floor((l - (opts.xBlocks - (opts.gradientBlocks * 2))) / 2);
               index = opts.gradientBlocks - index;
               index -= 1;
 
               if (i < opts.gradientBlocks) {
-                if ((opts.yBlocks / 2) - tempL - 1 < i) setColor = gradientColors[index];
+                if ((opts.xBlocks / 2) - tempL - 1 < i) setColor = gradientColors[index];
               }
-              if (i > opts.xBlocks - opts.gradientBlocks) {
-                if ((opts.yBlocks / 2) - tempL - 1 < opts.xBlocks - i) setColor = gradientColors[index];
+              if (i > opts.yBlocks - opts.gradientBlocks) {
+                if ((opts.xBlocks / 2) - tempL - 1 < opts.yBlocks - i) setColor = gradientColors[index];
               }
 
               if (!setColor.length) setColor = gradientColors[index];
@@ -225,7 +225,7 @@ function PolygonSea(opts) {
 
       }
 
-      currentX = -(opts.yBlocks / 2);
+      currentX = -(opts.xBlocks / 2);
       currentY += 2;
 
     }
@@ -250,30 +250,30 @@ function PolygonSea(opts) {
 
       if (index === 0) {
         points.push(moving[yIndex][xIndex].one);
-        if (xIndex + 1 < opts.yBlocks) {
+        if (xIndex + 1 < opts.xBlocks) {
           points.push(moving[yIndex][xIndex + 1].one);
         }
         if (xIndex - 1 > -1) {
           points.push(moving[yIndex][xIndex - 1].two);
         }
-        if ((xIndex - 1 > -1) && (yIndex + 1 < opts.xBlocks)) {
+        if ((xIndex - 1 > -1) && (yIndex + 1 < opts.yBlocks)) {
           points.push(moving[yIndex + 1][xIndex - 2].two);
           points.push(moving[yIndex + 1][xIndex - 1].three);
         }
-        if (yIndex + 1 < opts.xBlocks) {
+        if (yIndex + 1 < opts.yBlocks) {
           points.push(moving[yIndex + 1][xIndex].three);
         }
       }
 
       if (index === 1) {
         points.push(moving[yIndex][xIndex].two);
-        if (xIndex + 1 < opts.yBlocks) {
+        if (xIndex + 1 < opts.xBlocks) {
           points.push(moving[yIndex][xIndex + 1].three);
         }
-        if (xIndex + 2 < opts.yBlocks) {
+        if (xIndex + 2 < opts.xBlocks) {
           points.push(moving[yIndex][xIndex + 2].three);
         }
-        if ((xIndex + 2 < opts.yBlocks) && (yIndex - 1 > -1)) {
+        if ((xIndex + 2 < opts.xBlocks) && (yIndex - 1 > -1)) {
           points.push(moving[yIndex - 1][xIndex + 2].one);
           points.push(moving[yIndex - 1][xIndex + 3].one);
         }
@@ -306,25 +306,25 @@ function PolygonSea(opts) {
         if (xIndex - 2 > -1) {
           points.push(moving[yIndex][xIndex - 2].two);
         }
-        if ((xIndex - 2 > -1) && (yIndex + 1 < opts.xBlocks)) {
+        if ((xIndex - 2 > -1) && (yIndex + 1 < opts.yBlocks)) {
           points.push(moving[yIndex + 1][xIndex - 2].three);
           points.push(moving[yIndex + 1][xIndex - 3].two);
         }
-        if (yIndex + 1 < opts.xBlocks) {
+        if (yIndex + 1 < opts.yBlocks) {
           points.push(moving[yIndex + 1][xIndex - 1].three);
         }
       }
 
       if (index === 1) {
         points.push(moving[yIndex][xIndex].two);
-        if (xIndex + 1 < opts.yBlocks) {
+        if (xIndex + 1 < opts.xBlocks) {
           points.push(moving[yIndex][xIndex + 1].one);
           points.push(moving[yIndex][xIndex + 2].one);
         }
-        if ((xIndex + 1 < opts.yBlocks) && (yIndex + 1 < opts.xBlocks)) {
+        if ((xIndex + 1 < opts.xBlocks) && (yIndex + 1 < opts.yBlocks)) {
           points.push(moving[yIndex + 1][xIndex + 1].three);
         }
-        if (yIndex + 1 < opts.xBlocks) {
+        if (yIndex + 1 < opts.yBlocks) {
           points.push(moving[yIndex + 1][xIndex].three);
           points.push(moving[yIndex + 1][xIndex - 1].two);
         }
@@ -333,10 +333,10 @@ function PolygonSea(opts) {
       if (index === 2) {
         points.push(moving[yIndex][xIndex].three);
         points.push(moving[yIndex][xIndex - 1].two);
-        if (xIndex + 1 < opts.yBlocks) {
+        if (xIndex + 1 < opts.xBlocks) {
           points.push(moving[yIndex][xIndex + 1].three);
         }
-        if ((xIndex + 1 < opts.yBlocks) && (yIndex - 1 > -1)) {
+        if ((xIndex + 1 < opts.xBlocks) && (yIndex - 1 > -1)) {
           points.push(moving[yIndex - 1][xIndex + 1].one);
           points.push(moving[yIndex - 1][xIndex + 2].one);
         }
@@ -362,7 +362,7 @@ function PolygonSea(opts) {
     for (var i = isMoving.length - 1; i > -1; i--) {
 
       var point = isMoving[i];
-      var indice = (point.xIndex * (3 * 3)) + (point.yIndex * (opts.yBlocks * (3 * 3)));
+      var indice = (point.xIndex * (3 * 3)) + (point.yIndex * (opts.xBlocks * (3 * 3)));
 
       if (point.isMovingUp) {
         point.current = point.current + opts.moveIncrement;
