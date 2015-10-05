@@ -15,8 +15,8 @@ polygon sea
 
 var opts = {
   id: 'something',
-  xBlocks: 10,
-  yBlocks: 50,
+  xBlocks: 50,
+  yBlocks: 10,
   rotateX: -45,
   translateZ: -45,
   color: [0.25, 0.25, 0.25, 1],
@@ -98,6 +98,22 @@ The point move increment
 `Number`
 
 The maximum distence that a point can move
+
+###### gradientBlocks
+`Number`
+
+The number of gradient blocks
+
+###### gradientLeft gradientRight gradientTop gradientBottom
+`Number`
+
+The side of the gradient
+
+###### preset
+`Bool`
+
+If preset is true the polygon-sea will have shape before movement  
+If preset is false the polygon-sea will be flat before movement
 
 ### setup()
 Setup the polygon sea
